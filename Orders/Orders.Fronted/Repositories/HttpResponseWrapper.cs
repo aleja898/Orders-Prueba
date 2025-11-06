@@ -4,6 +4,7 @@ namespace Orders.Frontend.Repositories
 {
     public class HttpResponseWrapper<T>(T? response, bool error, HttpResponseMessage httpResponseMessage)
     {
+
         public T? Response { get; } = response;
         public bool Error { get; } = error;
         public HttpResponseMessage HttpResponseMessage { get; } = httpResponseMessage;
@@ -16,6 +17,7 @@ namespace Orders.Frontend.Repositories
             }
 
             var statusCode = HttpResponseMessage.StatusCode;
+
             if (statusCode == HttpStatusCode.NotFound)
             {
                 return "Recurso no encontrado.";

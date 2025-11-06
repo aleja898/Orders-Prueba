@@ -36,9 +36,31 @@ namespace Orders.Backend.Controllers
         [HttpPut]
         public async Task<IActionResult> PutAsync(Country country)
         {
-            _context.Update(country);
-            await _context.SaveChangesAsync();
-            return Ok(country);
+            var countryExist = await _context.Countries.AnyAsync(x => x.Id == country.Id);           
+
+            if (!countryExist)
+            {
+                return BadRequest("ID de país no coincide con el cuerpo de la solicitud.");
+            }
+            
+            try
+            {
+                _context.Update(country);
+                await _context.SaveChangesAsync();
+                return Ok(country); 
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un país con el mismo nombre.");
+                }
+                return BadRequest(dbUpdateException.Message);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
         }
 
         [HttpDelete("{id}")]
@@ -51,16 +73,31 @@ namespace Orders.Backend.Controllers
             }
             _context.Remove(country);
             await _context.SaveChangesAsync();
-            return Ok(country);
+            return NoContent(); 
         }
 
         [HttpPost]
         public async Task<IActionResult> PostAsync(Country country)
         {
-            _context.Add(country);
-            await _context.SaveChangesAsync();
-            return NoContent();
+            try
+            {
+                _context.Add(country);
+                await _context.SaveChangesAsync();
+
+                return Created($"/api/countries/{country.Id}", country);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un país con el mismo nombre.");
+                }
+                return BadRequest(dbUpdateException.Message);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
         }
     }
 }
-
