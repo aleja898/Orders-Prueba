@@ -11,8 +11,8 @@ using Orders.Backend.Data;
 namespace Orders.Backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251111210402_InitialCreationNueva")]
-    partial class InitialCreationNueva
+    [Migration("20251112170824_Inicilized")]
+    partial class Inicilized
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

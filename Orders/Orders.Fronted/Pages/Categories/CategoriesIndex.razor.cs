@@ -3,16 +3,15 @@ using Microsoft.AspNetCore.Components;
 using Orders.Frontend.Repositories;
 using Orders.Shared.Entities;
 
-namespace Orders.Fronted.Pages.Countries
+namespace Orders.Fronted.Pages.Categories
 {
-    public partial class CountriesIndex
+    public partial class CategoriesIndex
     {
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
         [Inject] private IRepository Repository { get; set; } = null!;
 
-        public List<Country>? Countries { get; set; }
-
+        public List<Category>? Categories { get; set; }
         protected override async Task OnInitializedAsync()
         {
             await LoadAsync();
@@ -20,40 +19,40 @@ namespace Orders.Fronted.Pages.Countries
 
         private async Task LoadAsync()
         {
-            var responseHppt = await Repository.GetAsync<List<Country>>("api/countries");
+            var responseHppt = await Repository.GetAsync<List<Category>>("api/categories");
             if (responseHppt.Error)
             {
                 var message = await responseHppt.GetErrorMessageAsync();
                 await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
             }
-            Countries = responseHppt.Response!;
+            Categories = responseHppt.Response!;
         }
 
-        private async Task DeleteAsync(Country country)
+        private async Task DeleteAsync(Category category)
         {
             var result = await SweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
-                Text = $"¿Esta seguro que quieres borrar el país: {country.Name}?",
+                Text = $"¿Esta seguro que quieres borrar la categoría: {category.Name}?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true
             });
 
             var confirm = !string.IsNullOrEmpty(result.Value);
 
-            if (!confirm) // Si NO se confirma (el usuario canceló), salir.
+            if (!confirm)
             {
                 return;
             }
 
-            var responseHTTP = await Repository.DeleteAsync<Country>($"api/countries/{country.Id}");
+            var responseHTTP = await Repository.DeleteAsync<Category>($"api/categories/{category.Id}");
             if (responseHTTP.Error)
             {
                 if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
 
-                    NavigationManager.NavigateTo("/countries");
+                    NavigationManager.NavigateTo("/categories");
                 }
                 else
                 {

@@ -4,18 +4,18 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Routing;
 using Orders.Shared.Entities;
 
-namespace Orders.Fronted.Pages.Countries
+namespace Orders.Fronted.Pages.Categories
 {
-    public partial class CountryForm
+    public partial class CategoryForm
     {
         private EditContext editContext = null!;
 
         protected override void OnInitialized()
         {
-            editContext = new(Country);
+            editContext = new(Category);
         }
 
-        [EditorRequired, Parameter] public Country Country { get; set; } = null!;
+        [EditorRequired, Parameter] public Category Category { get; set; } = null!;
         [EditorRequired, Parameter] public EventCallback OnValidSubmit { get; set; }
         [EditorRequired, Parameter] public EventCallback ReturnAction { get; set; }
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
@@ -44,7 +44,6 @@ namespace Orders.Fronted.Pages.Countries
             {
                 return; 
             }
-
             context.PreventNavigation();
         }
     }

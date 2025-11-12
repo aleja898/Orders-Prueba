@@ -5,7 +5,7 @@
 namespace Orders.Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreationNueva : Migration
+    public partial class Inicilized : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

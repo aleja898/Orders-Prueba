@@ -1,23 +1,24 @@
 ﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Orders.Fronted.Pages.Countries;
 using Orders.Frontend.Repositories;
 using Orders.Shared.Entities;
 
-namespace Orders.Fronted.Pages.Countries
+namespace Orders.Fronted.Pages.Categories
 {
-    public partial class CountryCreate
+    public partial class CategoryCreate
     {
-        private CountryForm? countryForm;
+        private CategoryForm? categoryForm;
 
         [Inject] private IRepository Repository { get; set; } = null!;
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
 
-        private Country country = new();
+        private Category category= new();
 
         private async Task CreateAsync()
         {
-            var responseHttp = await Repository.PostAsync("/api/countries", country);
+            var responseHttp = await Repository.PostAsync("/api/categories", category);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
@@ -38,8 +39,8 @@ namespace Orders.Fronted.Pages.Countries
 
         private void Return()
         {
-            countryForm!.FormPostedSuccessfully = true;
-            NavigationManager.NavigateTo("/countries");
+            categoryForm!.FormPostedSuccessfully = true;
+            NavigationManager.NavigateTo("/categories");
         }
     }
 }
