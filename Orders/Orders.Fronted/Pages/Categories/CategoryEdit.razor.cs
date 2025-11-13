@@ -1,5 +1,6 @@
 ﻿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components;
+using Orders.Fronted.Shared;
 using Orders.Frontend.Repositories;
 using Orders.Shared.Entities;
 
@@ -8,7 +9,7 @@ namespace Orders.Fronted.Pages.Categories
     public partial class CategoryEdit
     {
         private Category? category;
-        private CategoryForm? categoryForm;
+        private FormWithName<Category>? categoryForm;
 
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Inject] private IRepository Repository { get; set; } = null!;

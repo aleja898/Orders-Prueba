@@ -2,20 +2,22 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Routing;
-using Orders.Shared.Entities;
+using Orders.Shared.Interfaces;
 
-namespace Orders.Fronted.Pages.Categories
+namespace Orders.Fronted.Shared
 {
-    public partial class CategoryForm
+    public partial class FormWithName<TModel> where TModel : IEntityWithName
     {
         private EditContext editContext = null!;
 
         protected override void OnInitialized()
         {
-            editContext = new(Category);
+            editContext = new(Model);
         }
 
-        [EditorRequired, Parameter] public Category Category { get; set; } = null!;
+        [EditorRequired, Parameter] public TModel Model { get; set; } = default!;
+        [EditorRequired, Parameter] public string Label { get; set; } = null!;
+
         [EditorRequired, Parameter] public EventCallback OnValidSubmit { get; set; }
         [EditorRequired, Parameter] public EventCallback ReturnAction { get; set; }
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
@@ -42,7 +44,7 @@ namespace Orders.Fronted.Pages.Categories
 
             if (confirmAbandon)
             {
-                return; 
+                return;
             }
             context.PreventNavigation();
         }
