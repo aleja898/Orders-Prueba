@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Orders.Backend.Data;
 using Orders.Backend.Repositories.Interfaces;
+using Orders.Shared.DTOs;
 using Orders.Shared.Responses;
 
 namespace Orders.Backend.Repositories.Implementations
@@ -13,8 +14,9 @@ namespace Orders.Backend.Repositories.Implementations
         public GenericRepository(DataContext context)
         {
             _context = context;
-            _entity = _context.Set<T>(); 
+            _entity = _context.Set<T>();
         }
+
         public virtual async Task<ActionResponse<T>> AddAsync(T entity)
         {
             _context.Add(entity);
@@ -37,10 +39,9 @@ namespace Orders.Backend.Repositories.Implementations
             }
         }
 
-
         public virtual async Task<ActionResponse<T>> DeleteAsync(int id)
         {
-           var row = await _entity .FindAsync(id);
+            var row = await _entity.FindAsync(id);
             if (row == null)
             {
                 return new ActionResponse<T>
@@ -58,7 +59,7 @@ namespace Orders.Backend.Repositories.Implementations
                     WasSuccesse = true
                 };
             }
-            catch 
+            catch
             {
                 return new ActionResponse<T>
                 {
@@ -116,7 +117,34 @@ namespace Orders.Backend.Repositories.Implementations
                 return ExceptionActionResponse(exception);
             }
         }
-        private ActionResponse<T> DbUpdateExceptionActionResponse()
+
+        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync(PaginationDTO pagination)
+        {
+            var queryable = _entity.AsQueryable();
+
+            return new ActionResponse<IEnumerable<T>>
+            {
+                WasSuccesse = true,
+                Result = await queryable
+                    .Skip((pagination.Page - 1) * pagination.RecordsNumber)
+                    .Take(pagination.RecordsNumber)
+                    .ToListAsync()
+            };
+        }
+
+        public virtual async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
+        {
+            double count = await _entity.CountAsync();
+            int totalPages = (int)Math.Ceiling(count / pagination.RecordsNumber);
+
+            return new ActionResponse<int>
+            {
+                WasSuccesse = true,
+                Result = totalPages
+            };
+        }
+
+        private static ActionResponse<T> DbUpdateExceptionActionResponse()
         {
             return new ActionResponse<T>
             {
@@ -124,7 +152,8 @@ namespace Orders.Backend.Repositories.Implementations
                 Message = "Ya existe el registro que estás intentando crear"
             };
         }
-        private ActionResponse<T> ExceptionActionResponse(Exception exception)
+
+        private static ActionResponse<T> ExceptionActionResponse(Exception exception)
         {
             return new ActionResponse<T>
             {

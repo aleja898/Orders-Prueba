@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Orders.Backend.Data;
+using Orders.Backend.Helpers;
 using Orders.Backend.Repositories.Interfaces;
+using Orders.Shared.DTOs;
 using Orders.Shared.Entities;
 using Orders.Shared.Responses;
 
@@ -15,7 +17,8 @@ namespace Orders.Backend.Repositories.Implementations
             _context = context;
         }
 
-        public  override async Task<ActionResponse<State>> GetAsync(int Id)
+
+        public override async Task<ActionResponse<State>> GetAsync(int Id)
         {
             var state = await _context.States
                 .Include(s => s.Cities)
@@ -38,6 +41,7 @@ namespace Orders.Backend.Repositories.Implementations
         public override async Task<ActionResponse<IEnumerable<State>>> GetAsync()
         {
             var states = await _context.States
+                .OrderBy(x => x.Name)
                 .Include(s => s.Cities)
                 .ToListAsync();
             return new ActionResponse<IEnumerable<State>>
@@ -46,5 +50,39 @@ namespace Orders.Backend.Repositories.Implementations
                 Result = states
             };
         }
+
+
+        public override async Task<ActionResponse<IEnumerable<State>>> GetAsync(PaginationDTO pagination)
+        {
+            var quaryble = _context.States
+                .Include(x => x.Cities)
+                .Where(x => x.Country!.Id == pagination.Id)
+                .AsQueryable();
+
+            return new ActionResponse<IEnumerable<State>>
+            {
+                WasSuccesse = true,
+                Result = await quaryble
+                    .OrderBy(x => x.Name)
+                    .Paginate(pagination)
+                    .ToListAsync()
+            };
+        }
+
+        public async override Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
+        {
+            var quaryble = _context.States
+                .Where(x => x.Country!.Id == pagination.Id)
+                .AsQueryable();
+
+            double count = await quaryble.CountAsync();
+            int totalPages = (int)Math.Ceiling(count / pagination.RecordsNumber);
+            return new ActionResponse<int>
+            {
+                WasSuccesse = true,
+                Result = totalPages
+            };
+        }
+
     }
 }
