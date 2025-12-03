@@ -13,17 +13,27 @@ else
     </div>
 
     <h4>Ciudades </h4>
-    <GenericList MyList="state.Cities!.ToList()">
+    <GenericList MyList="cities!">
         <Body>
+            <Pagination CurrentPage="currentPage"
+                        TotalPages="totalPages"
+                        SelectedPage="SelectedPageAsync"/>
+
+            <div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
+                <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Ciudad..." @bind-value="Filter" />
+                <button type="button" class="btn btn-outline-primary mx-1" @onclick="ApplyFilterAsync">Filtrar</button>
+                <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Limpiar</button>
+            </div>
+
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Ciudad</th>
-                        <th></th>
+                        <th style="width:180px"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var city in state.Cities!)
+                    @foreach (var city in cities!)
                     {
                         <tr>
                             <td>

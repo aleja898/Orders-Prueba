@@ -9,37 +9,114 @@ namespace Orders.Fronted.Pages.Countries
     public partial class CountryDetails
     {
         private Country? country;
+        private List<State>? states;
+        private int currentPage = 1;
+        private int totalPages;
 
         [Inject] private NavigationManager NavigationManager { get; set; } = null!;
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
         [Inject] private IRepository Repository { get; set; } = null!;
 
-        [Parameter]
-        public int CountryId { get; set; }
-
+        [Parameter] public int CountryId { get; set; }
+        [Parameter, SupplyParameterFromQuery] public string Page { get; set; } = string.Empty;
+        [Parameter, SupplyParameterFromQuery] public string Filter { get; set; } = string.Empty;
         protected override async Task OnInitializedAsync()
         {
             await LoadAsync();
         }
 
-        private async Task LoadAsync()
+        private async Task SelectedPageAsync(int page)
         {
-            var responseHppt = await Repository.GetAsync<Country>($"api/countries/{CountryId}");
-            if (responseHppt.Error)
+            if (!string.IsNullOrWhiteSpace(Page))
             {
-                if (responseHppt.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
-                {
-                    NavigationManager.NavigateTo("/countries");
-                    return;
-                }
+                page = Convert.ToInt32(Page);
+            }
 
-                var message = await responseHppt.GetErrorMessageAsync();
+            currentPage = page;
+            await LoadAsync(page);
+        }
+
+        private async Task LoadAsync(int page = 1)
+        {
+            var ok = await LoadCountryAsync();
+            if (ok)
+            {
+                ok = await LoadStatesAsync(page);
+                if (ok)
+                {
+                    await LoadPagesAsync();
+                }
+            }
+        }
+
+        private async Task LoadPagesAsync()
+        {
+            var url = $"api/states/totalPages?id={CountryId}";
+            if (!string.IsNullOrEmpty(Filter))
+            {
+                url += $"&filter={Filter}";
+            }
+
+
+            var responseHttp = await Repository.GetAsync<int>(url);
+            if (responseHttp.Error)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
                 await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
             }
+            totalPages = responseHttp.Response;
+        }
 
-            country = responseHppt.Response;
+        private async Task<bool> LoadStatesAsync(int page)
+        {
+            var url = $"api/states?id={CountryId}&page={page}";
+            if (!string.IsNullOrEmpty(Filter))
+            {
+                url += $"&filter={Filter}";
+            }
 
+            var responseHttp = await Repository.GetAsync<List<State>>(url);
+            if (responseHttp.Error)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return false;
+            }
+            states = responseHttp.Response;
+            return true;
+        }
+        private async Task CleanFilterAsync()
+        {
+            Filter = string.Empty;
+            await ApplyFilterAsync();
+        }
+
+        private async Task ApplyFilterAsync()
+        {
+            int page = 1;
+            await LoadAsync(page);
+            await SelectedPageAsync(page);
+        }
+
+
+        private async Task<bool> LoadCountryAsync()
+        {
+            var responseHttp = await Repository.GetAsync<Country>($"/api/countries/{CountryId}");
+            if (responseHttp.Error)
+            {
+                if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+                {
+                    NavigationManager.NavigateTo("/countries");
+                    return false;
+                }
+
+                var message = await responseHttp.GetErrorMessageAsync();
+                await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return false;
+            }
+            country = responseHttp.Response;
+            return true;
         }
 
         private async Task DeleteAsync(State state)

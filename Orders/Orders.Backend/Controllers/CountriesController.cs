@@ -48,6 +48,17 @@ namespace Orders.Backend.Controllers
             }
             return NotFound(response.Message);
         }
+
+        [HttpGet("totalPages")]
+        public override async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
+        {
+            var action = await _countriesUnitOfWork.GetTotalPagesAsync(pagination);
+            if (action.WasSuccesse)
+            {
+                return Ok(action.Result);
+            }
+            return BadRequest();
+        }
     }
 }
        

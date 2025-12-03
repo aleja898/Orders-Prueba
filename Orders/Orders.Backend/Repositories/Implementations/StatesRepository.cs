@@ -59,6 +59,11 @@ namespace Orders.Backend.Repositories.Implementations
                 .Where(x => x.Country!.Id == pagination.Id)
                 .AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                quaryble = quaryble.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
             return new ActionResponse<IEnumerable<State>>
             {
                 WasSuccesse = true,
@@ -74,6 +79,11 @@ namespace Orders.Backend.Repositories.Implementations
             var quaryble = _context.States
                 .Where(x => x.Country!.Id == pagination.Id)
                 .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                quaryble = quaryble.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
 
             double count = await quaryble.CountAsync();
             int totalPages = (int)Math.Ceiling(count / pagination.RecordsNumber);
