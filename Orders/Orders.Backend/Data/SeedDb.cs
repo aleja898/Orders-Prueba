@@ -22,7 +22,7 @@ namespace Orders.Backend.Data
             await CheckCountriesAsync();
             await CheckCategoriesAsync();
             await CheckRolesAsync();
-            await CheckUserAsync("1010", "Juan", "Zuluaga", "zulu@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.Admin);
+            await CheckUserAsync("1010", "Alejandra", "Camargo", "alejacamargo84@gmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.Admin);
 
         }
 

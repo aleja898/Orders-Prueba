@@ -13,6 +13,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7192/") });
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddSweetAlert2();
+builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProviderTest>();
 
 await builder.Build().RunAsync();
