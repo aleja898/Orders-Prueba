@@ -1,4 +1,5 @@
 ﻿using CurrieTechnologies.Razor.SweetAlert2;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Orders.Fronted.Shared;
 using Orders.Frontend.Repositories;
@@ -6,6 +7,7 @@ using Orders.Shared.Entities;
 
 namespace Orders.Fronted.Pages.Countries
 {
+    [Authorize(Roles = "Admin")]
     public partial class CountryCreate
     {
         private FormWithName<Country>? countryForm;
