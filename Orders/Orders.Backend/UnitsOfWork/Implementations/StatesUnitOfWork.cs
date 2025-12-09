@@ -14,10 +14,16 @@ namespace Orders.Backend.UnitsOfWork.Implementations
             _statesRepository = statesRepository;
         }
 
-        public override async Task<ActionResponse<IEnumerable<State>>> GetAsync() => await _statesRepository.GetAsync();
-        public override async Task<ActionResponse<State>> GetAsync(int Id) => await _statesRepository.GetAsync(Id);
-        public override async Task<ActionResponse<IEnumerable<State>>> GetAsync(PaginationDTO pagination) => await _statesRepository.GetAsync(pagination);
-        public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination) => await _statesRepository.GetTotalPagesAsync(pagination);
+        public override async Task<ActionResponse<IEnumerable<State>>> GetAsync() => 
+            await _statesRepository.GetAsync();
+        public override async Task<ActionResponse<State>> GetAsync(int Id) => 
+            await _statesRepository.GetAsync(Id);
+        public override async Task<ActionResponse<IEnumerable<State>>> GetAsync(PaginationDTO pagination) => 
+            await _statesRepository.GetAsync(pagination);
+        public override async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination) => 
+            await _statesRepository.GetTotalPagesAsync(pagination);
+        public async Task<IEnumerable<State>> GetComboAsync(int countryId) => await 
+            _statesRepository.GetComboAsync(countryId);
 
     }
 }
