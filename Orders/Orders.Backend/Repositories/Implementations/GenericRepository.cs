@@ -17,6 +17,32 @@ namespace Orders.Backend.Repositories.Implementations
             _entity = _context.Set<T>();
         }
 
+        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync(PaginationDTO pagination)
+        {
+            var queryable = _entity.AsQueryable();
+
+            return new ActionResponse<IEnumerable<T>>
+            {
+                WasSuccesse = true,
+                Result = await queryable
+                    .Skip((pagination.Page - 1) * pagination.RecordsNumber)
+                    .Take(pagination.RecordsNumber)
+                    .ToListAsync()
+            };
+        }
+
+        public virtual async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
+        {
+            double count = await _entity.CountAsync();
+            int totalPages = (int)Math.Ceiling(count / pagination.RecordsNumber);
+
+            return new ActionResponse<int>
+            {
+                WasSuccesse = true,
+                Result = totalPages
+            };
+        }
+
         public virtual async Task<ActionResponse<T>> AddAsync(T entity)
         {
             _context.Add(entity);
@@ -29,9 +55,20 @@ namespace Orders.Backend.Repositories.Implementations
                     Result = entity
                 };
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
-                return DbUpdateExceptionActionResponse();
+                if (ex.InnerException != null)
+                {
+                    if (ex.InnerException!.Message.Contains("duplicate"))
+                    {
+                        return DbUpdateExceptionActionResponse();
+                    }
+                }
+                return new ActionResponse<T>
+                {
+                    WasSuccess = false,
+                    Message = ex.Message
+                };
             }
             catch (Exception exception)
             {
@@ -108,40 +145,25 @@ namespace Orders.Backend.Repositories.Implementations
                     Result = entity
                 };
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
-                return DbUpdateExceptionActionResponse();
+                if (ex.InnerException != null)
+                {
+                    if (ex.InnerException!.Message.Contains("duplicate"))
+                    {
+                        return DbUpdateExceptionActionResponse();
+                    }
+                }
+                return new ActionResponse<T>
+                {
+                    WasSuccess = false,
+                    Message = ex.Message
+                };
             }
             catch (Exception exception)
             {
                 return ExceptionActionResponse(exception);
             }
-        }
-
-        public virtual async Task<ActionResponse<IEnumerable<T>>> GetAsync(PaginationDTO pagination)
-        {
-            var queryable = _entity.AsQueryable();
-
-            return new ActionResponse<IEnumerable<T>>
-            {
-                WasSuccesse = true,
-                Result = await queryable
-                    .Skip((pagination.Page - 1) * pagination.RecordsNumber)
-                    .Take(pagination.RecordsNumber)
-                    .ToListAsync()
-            };
-        }
-
-        public virtual async Task<ActionResponse<int>> GetTotalPagesAsync(PaginationDTO pagination)
-        {
-            double count = await _entity.CountAsync();
-            int totalPages = (int)Math.Ceiling(count / pagination.RecordsNumber);
-
-            return new ActionResponse<int>
-            {
-                WasSuccesse = true,
-                Result = totalPages
-            };
         }
 
         private static ActionResponse<T> DbUpdateExceptionActionResponse()

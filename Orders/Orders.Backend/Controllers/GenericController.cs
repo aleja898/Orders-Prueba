@@ -54,7 +54,7 @@ namespace Orders.Backend.Controllers
             {
                 return Ok(action.Result);
             }
-            return BadRequest();
+            return NotFound();
         }
 
         [HttpPost]
@@ -69,7 +69,7 @@ namespace Orders.Backend.Controllers
         }
 
         [HttpPut]
-        public virtual async Task<IActionResult> UpdateAsync(T model)
+        public virtual async Task<IActionResult> PutAsync(T model)
         {
             var action = await _unitOfWork.UpdateAsync(model);
             if (action.WasSuccesse)
