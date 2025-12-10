@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Orders.Fronted;
 using Orders.Fronted.AuthenticationProviders;
+using Orders.Fronted.Repositories;
 using Orders.Fronted.Services;
 using Orders.Frontend.Repositories;
 

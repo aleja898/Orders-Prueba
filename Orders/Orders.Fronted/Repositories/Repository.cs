@@ -1,10 +1,9 @@
 ﻿
-using System.Reflection;
+using Orders.Frontend.Repositories;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-namespace Orders.Frontend.Repositories
+namespace Orders.Fronted.Repositories
 {
     public class Repository : IRepository
     {
@@ -17,6 +16,12 @@ namespace Orders.Frontend.Repositories
         public Repository(HttpClient httpClient)
         {
             _httpClient = httpClient;
+        }
+
+        public async Task<HttpResponseWrapper<object>> GetAsync(string url)
+        {
+            var responseHTTP = await _httpClient.GetAsync(url);
+            return new HttpResponseWrapper<object>(null, !responseHTTP.IsSuccessStatusCode, responseHTTP);
         }
 
         public async Task<HttpResponseWrapper<T>> GetAsync<T>(string url)
