@@ -25,6 +25,14 @@ namespace Orders.Fronted.Pages.Categories
             await LoadAsync();
         }
 
+        private async Task FilterCallBack(string filter)
+        {
+            Filter = filter;
+            await ApplyFilterAsync();
+            StateHasChanged();
+        }
+
+
         private async Task SelectedPageAsync(int page)
         {
             currentPage = page;
@@ -82,11 +90,6 @@ namespace Orders.Fronted.Pages.Categories
             totalPages = responseHttp.Response;
         }
 
-        private async Task CleanFilterAsync()
-        {
-            Filter = string.Empty;
-            await ApplyFilterAsync();
-        }
 
         private async Task ApplyFilterAsync()
         {
