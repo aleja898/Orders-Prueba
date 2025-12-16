@@ -2,50 +2,52 @@
 
 @if (country is null)
 {
-	<Loading />
+    <Loading />
 }
 else
 {
-	<div class="card">
-		<div class="card-header">
-			<span>
-				<i class="bi bi-globe-americas" /> @country.Name
-				<a class="btn btn-sm btn-primary float-end mx-1" href="/states/create/@country.Id"><i class="bi bi-plus-square" />  Adicionar Estado/Departamento</a>
-				<a class="btn btn-sm btn-success float-end" href="/countries"><i class="bi bi-arrow-left" />  Regresar</a>
-			</span>
-		</div>
-		<div class="card-body">
-			<Filter PlaceHolder="Buscar estado/departamento..." Callback="@FilterCallBack" />
-			<GenericList MyList="states!">
-				<Body>
-					<Pagination CurrentPage="currentPage"
-								TotalPages="totalPages"
-								SelectedPage="SelectedPageAsync" />
+    <div class="card">
+        <div class="card-header">
+            <span>
+                <i class="bi bi-globe-americas" /> @country.Name
+                <a class="btn btn-sm btn-primary float-end mx-1" @onclick=@(() => ShowModalAsync())><i class="bi bi-plus-square" />  Adicionar Estado/Departamento</a>
+                <a class="btn btn-sm btn-success float-end" href="/countries"><i class="bi bi-arrow-left" />  Regresar</a>
+            </span>
+        </div>
+        <div class="card-body">
+            <Filter PlaceHolder="Buscar estado/departamento..." Callback=@FilterCallBack />
+            <GenericList MyList="states!">
+                <Body>
+                    <Pagination CurrentPage="currentPage"
+                                TotalPages="totalPages"
+                                SelectedPage="SelectedPageAsync"
+                                RecordsNumber="SelectedRecordsNumberAsync" />
 
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Estado / Departamento</th>
-								<th style="width:90px">Ciudades</th>
-								<th style="width:168px"></th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach (var state in states!)
-							{
-								<tr>
-									<td><a href="/states/details/@state.Id">@state.Name</a></td>
-									<td>@state.CitiesNumber</td>
-									<td>
-										<a class="btn btn-warning btn-sm" href="/states/edit/@state.Id"><i class="bi bi-pencil" /> Editar</a>
-										<button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(state))><i class="bi bi-trash" /> Borrar</button>
-									</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</Body>
-			</GenericList>
-		</div>
-	</div>
+
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Estado / Departamento</th>
+                                <th style="width:90px">Ciudades</th>
+                                <th style="width:168px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var state in states!)
+                            {
+                                <tr>
+                                    <td><a href="/states/details/@state.Id">@state.Name</a></td>
+                                    <td>@state.CitiesNumber</td>
+                                    <td>
+                                        <a class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(state.Id, true))><i class="bi bi-pencil" /> Editar</a>
+                                        <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(state))><i class="bi bi-trash" /> Borrar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </Body>
+            </GenericList>
+        </div>
+    </div>
 }
