@@ -6,6 +6,7 @@ namespace Orders.Shared.Entities
 {
     public class User : IdentityUser
     {
+
         [Display(Name = "Documento")]
         [MaxLength(20, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -40,6 +41,8 @@ namespace Orders.Shared.Entities
 
         [Display(Name = "Usuario")]
         public string FullName => $"{FirstName} {LastName}";
+        public ICollection<TemporalOrder>? TemporalOrders { get; set; }
+        public ICollection<Order>? Orders { get; set; }
     }
 }
 

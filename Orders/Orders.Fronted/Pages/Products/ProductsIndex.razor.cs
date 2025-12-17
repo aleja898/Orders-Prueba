@@ -1,4 +1,4 @@
-using CurrieTechnologies.Razor.SweetAlert2;
+ï»¿using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Orders.Frontend.Repositories;
@@ -113,8 +113,8 @@ namespace Orders.Fronted.Pages.Products
         {
             var result = await SweetAlertService.FireAsync(new SweetAlertOptions
             {
-                Title = "Confirmación",
-                Text = "¿Esta seguro que quieres borrar el registro?",
+                Title = "Confirmaciï¿½n",
+                Text = "ï¿½Esta seguro que quieres borrar el registro?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true
             });
@@ -141,6 +141,14 @@ namespace Orders.Fronted.Pages.Products
             }
 
             await LoadAsync(1);
+            var toast = SweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+            await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro borrado con ï¿½xito.");
         }
 
         private async Task ApplyFilterAsync()
