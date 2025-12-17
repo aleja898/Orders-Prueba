@@ -9,7 +9,7 @@ using System.Net;
 
 namespace Orders.Fronted.Pages.Cart
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, User")]
     public partial class OrderDetails
     {
         private Order? order;
