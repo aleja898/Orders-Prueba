@@ -21,6 +21,7 @@ namespace Orders.Fronted.Pages.Auth
         [Inject] private SweetAlertService SweetAlertService { get; set; } = null!;
         [Inject] private IRepository Repository { get; set; } = null!;
         [Inject] private ILoginService LoginService { get; set; } = null!;
+        [Parameter, SupplyParameterFromQuery] public bool IsAdmin { get; set; }
 
 
         protected override async Task OnInitializedAsync()
@@ -96,6 +97,11 @@ namespace Orders.Fronted.Pages.Auth
         {
             userDTO.UserName = userDTO.Email;
             userDTO.UserType = UserType.User;
+            if (IsAdmin)
+            {
+                userDTO.UserType = UserType.Admin;
+            }
+            loading = true;
             var responseHttp = await Repository.PostAsync<UserDTO>("/api/accounts/CreateUser", userDTO);
             loading = false;
             if (responseHttp.Error)
@@ -105,8 +111,8 @@ namespace Orders.Fronted.Pages.Auth
                 return;
             }
 
-            await SweetAlertService.FireAsync("Confirmación", "Su cuenta ha sido creada con éxito. Se te ha enviado " +
-                "un correo electrónico con las instrucciones para activar tu usuario.", SweetAlertIcon.Info);
+            await SweetAlertService.FireAsync("Confirmación", "Su cuenta ha sido creada con éxito. Se te ha enviado un correo electrónico con las instrucciones para activar tu usuario.", SweetAlertIcon.Info);
+            NavigationManager.NavigateTo("/");
         }
     }
 }
